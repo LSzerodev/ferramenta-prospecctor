@@ -70,7 +70,7 @@ Isso sobe:
 
 1. Rode `npm run dev`
 2. Abra `http://localhost:3000`
-3. Envie seu JSON no passo 1 ou use o arquivo local do servidor
+3. Envie seu JSON no passo 1 ou coloque um arquivo `.json` de origem dentro de `src/db` para usar o botao de arquivo local
 4. Escolha e ajuste a mensagem no passo 2
 5. No passo 3, configure os tempos se quiser e inicie o scrapper
 6. Quando o navegador abrir, autentique o WhatsApp Web
@@ -99,6 +99,7 @@ npm run web:dev
 4. Inicie o WhatsApp no passo 3
 
 Se quiser usar o dataset padrao salvo em `src/db`, use o botao "Organizar arquivo local do servidor" na interface web.
+Se existir mais de um `.json` de origem em `src/db`, o backend escolhe automaticamente o mais recente, priorizando o nome antigo padrao quando ele existir.
 
 ## O Que Nao Vai Para O Git
 
@@ -112,6 +113,7 @@ Alguns arquivos sao gerados em runtime e por isso nao sobem para o repositorio:
 - datasets grandes exportados para `src/db/dataset_crawler-google-places_*.json`
 
 Cada pessoa que clonar o projeto vai gerar esses arquivos localmente durante o uso.
+O `.gitignore` continua importante para evitar subir `node_modules`, sessao do WhatsApp em `profile-zap/`, progresso local e datasets pessoais por engano.
 
 ## Arquivos importantes
 

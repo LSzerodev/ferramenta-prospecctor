@@ -8,8 +8,18 @@ import fs from 'node:fs/promises';
 import { getDbDir, ensureDbDir, writeJson } from './lib/file-io.js';
 import { extrairNomePessoa, normalizarPhone, classificarItem } from './lib/text-cleaner.js';
 
-/** Nome do arquivo do dataset original em src/db (altere se usar outro arquivo). */
-export const DATASET_FILENAME = 'dataset_crawler-google-places_2026-02-22_22-51-03-715.json';
+/** Nome preferido do dataset original em src/db, se existir. */
+export const DEFAULT_DATASET_FILENAME = 'dataset_crawler-google-places_2026-02-22_22-51-03-715.json';
+
+const INTERNAL_DB_FILENAMES = new Set([
+  'clinicas-DB.json',
+  'gender-overrides.json',
+  'invalidos-DB.json',
+  'mensagens-prospeccao.json',
+  'pessoas-DB.json',
+  'progress.json',
+  'scrapper-config.json',
+]);
 
 const DATASET_KEYS = ['dataset', 'data', 'items', 'results', 'records', 'places', 'leads', 'contacts'];
 
@@ -101,6 +111,38 @@ function normalizeInputRecord(item) {
   };
 }
 
+export async function resolveLocalDatasetFileName() {
+  const dbDir = getDbDir();
+
+  let entries;
+  try {
+    entries = await fs.readdir(dbDir, { withFileTypes: true });
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+
+  const candidates = [];
+
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    if (!entry.name.toLowerCase().endsWith('.json')) continue;
+    if (INTERNAL_DB_FILENAMES.has(entry.name)) continue;
+
+    const filePath = path.join(dbDir, entry.name);
+    const stat = await fs.stat(filePath);
+    candidates.push({ name: entry.name, mtimeMs: stat.mtimeMs });
+  }
+
+  if (!candidates.length) return null;
+
+  const preferred = candidates.find((entry) => entry.name === DEFAULT_DATASET_FILENAME);
+  if (preferred) return preferred.name;
+
+  candidates.sort((a, b) => b.mtimeMs - a.mtimeMs || a.name.localeCompare(b.name));
+  return candidates[0].name;
+}
+
 /**
  * Classifica um dataset bruto em pessoas, clinicas e invalidos.
  * Aceita tanto um array na raiz quanto objetos com a lista dentro de data/items/results/records.
@@ -180,7 +222,15 @@ export function processRawDataset(rawDb) {
  */
 export async function gerarDbLimpo() {
   const dbDir = getDbDir();
-  const datasetPath = path.join(dbDir, DATASET_FILENAME);
+  const datasetFilename = await resolveLocalDatasetFileName();
+
+  if (!datasetFilename) {
+    throw new Error(
+      `Nenhum dataset local foi encontrado em ${dbDir}. Envie o JSON pela interface ou coloque um arquivo .json de origem dentro de src/db/.`
+    );
+  }
+
+  const datasetPath = path.join(dbDir, datasetFilename);
 
   let rawDb;
   try {
@@ -188,7 +238,7 @@ export async function gerarDbLimpo() {
   } catch (err) {
     if (err.code === 'ENOENT') {
       throw new Error(
-        `Dataset nao encontrado: ${datasetPath}. Coloque o JSON em src/db/ ou altere DATASET_FILENAME em db-pipeline.js`
+        `Dataset nao encontrado: ${datasetPath}. Envie o JSON pela interface ou coloque um arquivo .json de origem dentro de src/db/.`
       );
     }
     throw err;
@@ -212,5 +262,7 @@ export async function gerarDbLimpo() {
       clinicas: clinicas.length,
       invalidos: invalidos.length,
     },
+    sourceFile: datasetFilename,
+    sourcePath: datasetPath,
   };
 }

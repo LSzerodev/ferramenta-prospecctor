@@ -10,7 +10,7 @@ import express from 'express';
 import multer from 'multer';
 import cors from 'cors';
 
-import { processRawDataset, gerarDbLimpo, DATASET_FILENAME } from './db-pipeline.js';
+import { processRawDataset, gerarDbLimpo, resolveLocalDatasetFileName } from './db-pipeline.js';
 import { readJson, writeJson, getDbDir, ensureDbDir } from './lib/file-io.js';
 import { OUTPUT_EXPLANATIONS, enrichInvalidoForUi } from './lib/pipeline-explanations.js';
 import { PLACEHOLDER_HINTS, normalizeTemplateBodyPlaceholders } from './lib/message-template.js';
@@ -162,11 +162,12 @@ app.get('/', (_req, res) => {
 
 app.get('/api/dashboard', async (_req, res) => {
   try {
-    const [pessoas, clinicas, invalidos, progress] = await Promise.all([
+    const [pessoas, clinicas, invalidos, progress, localDatasetFile] = await Promise.all([
       readJson('pessoas-DB.json'),
       readJson('clinicas-DB.json'),
       readJson('invalidos-DB.json'),
       readJson('progress.json'),
+      resolveLocalDatasetFileName(),
     ]);
     const running = scrapperChild !== null && scrapperChild.exitCode === null;
 
@@ -181,7 +182,7 @@ app.get('/api/dashboard', async (_req, res) => {
       },
       progress: progress ?? { lastIndex: 0 },
       dbDir: getDbDir(),
-      pipelineLocalFile: DATASET_FILENAME,
+      pipelineLocalFile: localDatasetFile,
     });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message || String(err) });
@@ -266,8 +267,8 @@ app.get('/api/ver/lista/:tipo', async (req, res) => {
 
 app.post('/api/pipeline/local', async (_req, res) => {
   try {
-    const { counts } = await gerarDbLimpo();
-    res.json({ ok: true, counts, source: path.join(getDbDir(), DATASET_FILENAME) });
+    const { counts, sourceFile, sourcePath } = await gerarDbLimpo();
+    res.json({ ok: true, counts, source: sourcePath, sourceFile });
   } catch (err) {
     res.status(400).json({ ok: false, error: err.message || String(err) });
   }

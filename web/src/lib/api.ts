@@ -23,7 +23,7 @@ export type DashboardResponse = {
   counts?: Counts;
   progress?: { lastIndex: number };
   dbDir?: string;
-  pipelineLocalFile?: string;
+  pipelineLocalFile?: string | null;
   error?: string;
 };
 
@@ -68,6 +68,7 @@ export type PipelineLocalResponse = {
   error?: string;
   counts?: Counts;
   source?: string;
+  sourceFile?: string;
 };
 
 export type MensagemTemplate = {

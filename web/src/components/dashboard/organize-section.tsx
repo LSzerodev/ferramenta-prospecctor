@@ -7,7 +7,7 @@ import { apiUrl, fetchJson, type OrganizarResposta, type PipelineLocalResponse }
 type Props = {
   onSuccess: (data: OrganizarResposta) => void;
   onRefreshResumo: () => void;
-  localDatasetName?: string;
+  localDatasetName?: string | null;
 };
 
 export function OrganizeSection({ onSuccess, onRefreshResumo, localDatasetName }: Props) {
@@ -55,6 +55,11 @@ export function OrganizeSection({ onSuccess, onRefreshResumo, localDatasetName }
   };
 
   const runLocalPipeline = async () => {
+    if (!localDatasetName) {
+      setErr("Nenhum arquivo local foi encontrado em src/db. Envie o JSON acima ou coloque um dataset .json nessa pasta.");
+      return;
+    }
+
     setErr("");
     setLocalInfo("");
     setBusyLocal(true);
@@ -64,7 +69,7 @@ export function OrganizeSection({ onSuccess, onRefreshResumo, localDatasetName }
       const counts = data.counts;
       setLocalInfo(
         counts
-          ? `Arquivo local organizado: ${counts.pessoas} contato(s), ${counts.clinicas} lugar(es) e ${counts.invalidos} ignorado(s).`
+          ? `Arquivo local organizado (${data.sourceFile ?? localDatasetName}): ${counts.pessoas} contato(s), ${counts.clinicas} lugar(es) e ${counts.invalidos} ignorado(s).`
           : "Arquivo local organizado."
       );
       onRefreshResumo();
@@ -147,7 +152,7 @@ export function OrganizeSection({ onSuccess, onRefreshResumo, localDatasetName }
 
         <button
           type="button"
-          disabled={busyLocal}
+          disabled={busyLocal || !localDatasetName}
           onClick={() => void runLocalPipeline()}
           className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-zinc-800 disabled:opacity-40"
         >
@@ -157,7 +162,8 @@ export function OrganizeSection({ onSuccess, onRefreshResumo, localDatasetName }
       </div>
 
       <p className="mt-3 text-xs text-zinc-500">
-        Arquivo local configurado no backend: <span className="font-mono text-zinc-400">{localDatasetName ?? "nao informado"}</span>
+        Arquivo local encontrado no servidor:{" "}
+        <span className="font-mono text-zinc-400">{localDatasetName ?? "nenhum .json de origem encontrado em src/db"}</span>
       </p>
     </section>
   );
