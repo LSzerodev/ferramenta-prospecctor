@@ -7,6 +7,35 @@ Projeto com duas partes:
 
 O backend nao serve mais uma interface propria. A UI oficial fica no Next.
 
+## Funciona para quem clonar?
+
+Sim, para uso local no computador da pessoa. Quem clonar o repositorio consegue usar normalmente desde que:
+
+- instale as dependencias da raiz e da pasta `web`
+- rode o projeto localmente
+- faca login no WhatsApp Web quando o navegador abrir
+- envie o proprio JSON ou coloque um dataset local em `src/db`
+
+Se a ideia for hospedar isso como um site publico para qualquer pessoa usar no navegador, ai nao e plug and play. O scrapper abre o WhatsApp Web via Puppeteer na maquina onde o backend esta rodando, entao essa arquitetura e voltada para uso local.
+
+## Requisitos
+
+- Node.js 20 ou superior
+- npm
+- internet para instalar as dependencias
+- um WhatsApp que possa ser autenticado no WhatsApp Web
+
+Nao precisa configurar `.env` para rodar tudo localmente.
+
+## Instalacao Apos Clonar
+
+Na raiz do projeto:
+
+```bash
+npm install
+npm install --prefix web
+```
+
 ## Subir tudo em desenvolvimento
 
 Na raiz do projeto:
@@ -19,6 +48,17 @@ Isso sobe:
 
 - API em `http://localhost:3847`
 - Web em `http://localhost:3000`
+
+## Primeiro Uso
+
+1. Rode `npm run dev`
+2. Abra `http://localhost:3000`
+3. Envie seu JSON no passo 1 ou use o arquivo local do servidor
+4. Escolha e ajuste a mensagem no passo 2
+5. No passo 3, configure os tempos se quiser e inicie o scrapper
+6. Quando o navegador abrir, autentique o WhatsApp Web
+
+Sem organizar um JSON primeiro, o envio nao vai executar porque `pessoas-DB.json` nao existe ou estara vazio.
 
 ## Rodar separado
 
@@ -42,6 +82,19 @@ npm run web:dev
 4. Inicie o WhatsApp no passo 3
 
 Se quiser usar o dataset padrao salvo em `src/db`, use o botao "Organizar arquivo local do servidor" na interface web.
+
+## O Que Nao Vai Para O Git
+
+Alguns arquivos sao gerados em runtime e por isso nao sobem para o repositorio:
+
+- `profile-zap/`
+- `src/db/pessoas-DB.json`
+- `src/db/clinicas-DB.json`
+- `src/db/invalidos-DB.json`
+- `src/db/progress.json`
+- datasets grandes exportados para `src/db/dataset_crawler-google-places_*.json`
+
+Cada pessoa que clonar o projeto vai gerar esses arquivos localmente durante o uso.
 
 ## Arquivos importantes
 
