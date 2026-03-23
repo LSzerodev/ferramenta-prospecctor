@@ -18,16 +18,33 @@ Sim, para uso local no computador da pessoa. Quem clonar o repositorio consegue 
 
 Se a ideia for hospedar isso como um site publico para qualquer pessoa usar no navegador, ai nao e plug and play. O scrapper abre o WhatsApp Web via Puppeteer na maquina onde o backend esta rodando, entao essa arquitetura e voltada para uso local.
 
+## O Que Precisa Instalar Para Funcionar
+
+Antes de tentar rodar o projeto, instale isto:
+
+- Git, para clonar o repositorio: [https://git-scm.com/downloads](https://git-scm.com/downloads)
+- Node.js LTS, para rodar o backend e o Next: [https://nodejs.org/en/download](https://nodejs.org/en/download)
+- VS Code, para abrir e editar o projeto: [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download)
+
+O `npm` ja vem junto com o Node.js.
+
 ## Requisitos
 
 - Node.js 20 ou superior
-- npm
+- npm instalado junto com o Node.js
 - internet para instalar as dependencias
 - um WhatsApp que possa ser autenticado no WhatsApp Web
 
 Nao precisa configurar `.env` para rodar tudo localmente.
 
 ## Instalacao Apos Clonar
+
+Clone o repositorio:
+
+```bash
+git clone https://github.com/LSzerodev/ferramenta-prospecctor.git
+cd ferramenta-prospecctor
+```
 
 Na raiz do projeto:
 
