@@ -1,0 +1,9 @@
+Funcoes
+Colar numero no input para mandar mensagem - else -> caso numero nao seja valido vai para o outro )
+colar o script no input
+ter delay para enviar o whatsapp ( timeout )
+
+passo a passo
+para manter logado usaremos cookies!
+apos entrar no whatsapp logado ele vai ter que pegar o HTML
+

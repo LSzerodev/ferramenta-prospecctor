@@ -1,0 +1,17 @@
+node_modules/
+profile-zap/
+
+web/.next/
+web/node_modules/
+web/.env*
+
+src/db/clinicas-DB.json
+src/db/dataset_crawler-google-places_*.json
+src/db/invalidos-DB.json
+src/db/pessoas-DB.json
+src/db/progress.json
+
+.git-backups/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

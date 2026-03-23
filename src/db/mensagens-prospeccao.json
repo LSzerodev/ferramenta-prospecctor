@@ -1,0 +1,15 @@
+{
+  "templates": [
+    {
+      "id": "padrao-amigavel",
+      "name": "Mensagem simpática (padrão)",
+      "body": "Oii {name} tudo bem? Vi seu perfil e me chamou atenção sua atuação na área de {ramo}. Posso te falar rapidinho?"
+    },
+    {
+      "id": "formal-doutora",
+      "name": "Mais formal — doutor(a)",
+      "body": "Olá, {name}, tudo bem? Sou da área de estética e gostaria de conversar. Vi seu contato em {nameOriginal}."
+    }
+  ],
+  "activeTemplateId": "padrao-amigavel"
+}

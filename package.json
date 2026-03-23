@@ -1,0 +1,26 @@
+{
+  "name": "scrapper-whatsap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/dev.js",
+    "start": "node src/launch-scrapper.js",
+    "reset": "node src/launch-scrapper.js --reset",
+    "dryRun": "node src/launch-scrapper.js --dryRun",
+    "fixRamo": "node src/db/update_ramo_by_title.js",
+    "serve": "node src/server.js",
+    "web:dev": "npm run dev --prefix web",
+    "web:build": "npm run build --prefix web"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.21.2",
+    "multer": "^2.0.0",
+    "puppeteer": "^24.37.5"
+  }
+}

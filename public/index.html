@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Painel — Scrapper WhatsApp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Ir ao conteúdo</a>
+
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">●</span>
+          <div>
+            <strong>Painel</strong>
+            <span class="brand-sub">scrapper-whatsap</span>
+          </div>
+        </div>
+        <p class="sidebar-note">
+          O navegador chama a <strong>API</strong> em <code>src/server.js</code>. Ela executa o mesmo código que você já tinha:
+          <code>db-pipeline.js</code>, <code>launch-scrapper.js</code> e <code>update_ramo_by_title.js</code>.
+        </p>
+        <nav class="side-nav" aria-label="Seções">
+          <a href="#visao">Visão geral</a>
+          <a href="#mapa">Mapa backend ↔ painel</a>
+          <a href="#dados">Dados (pipeline)</a>
+          <a href="#ramo">Ramo (gênero)</a>
+          <a href="#whatsapp">WhatsApp</a>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="mono tiny" id="connState">Conectando…</span>
+        </div>
+      </aside>
+
+      <main id="main" class="main">
+        <header class="topbar">
+          <h1>Painel de controle</h1>
+          <p class="lede">
+            Use as ações abaixo para acionar o backend. Primeiro suba o servidor:
+            <code class="inline-cmd">npm run serve</code>
+            e abra esta página pelo endereço que aparecer no terminal.
+          </p>
+        </header>
+
+        <section class="panel" id="visao">
+          <h2 class="panel-title">Visão geral</h2>
+          <p class="panel-desc">Estado atual lido de <code>src/db</code> via <span class="endpoint">GET /api/dashboard</span>.</p>
+          <div class="stat-grid">
+            <article class="stat-card">
+              <span class="stat-label">Pessoas</span>
+              <span class="stat-value" id="statPessoas">—</span>
+              <span class="stat-file">pessoas-DB.json</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Clínicas</span>
+              <span class="stat-value" id="statClinicas">—</span>
+              <span class="stat-file">clinicas-DB.json</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Inválidos</span>
+              <span class="stat-value" id="statInvalidos">—</span>
+              <span class="stat-file">invalidos-DB.json</span>
+            </article>
+            <article class="stat-card stat-card-accent">
+              <span class="stat-label">Progresso do scrapper</span>
+              <span class="stat-value"><span id="statProgress">—</span> <span class="stat-suffix">/ próximo índice</span></span>
+              <span class="stat-file">progress.json</span>
+            </article>
+          </div>
+          <div class="pill-row">
+            <span class="pill" id="pillScrapper">Scrapper: …</span>
+            <span class="pill pill-muted mono tiny" id="pillDbDir"></span>
+          </div>
+        </section>
+
+        <section class="panel" id="mapa">
+          <h2 class="panel-title">Mapa: o que o painel chama no backend</h2>
+          <div class="table-wrap">
+            <table class="map-table">
+              <thead>
+                <tr>
+                  <th>Função do seu projeto</th>
+                  <th>Endpoint / ação da API</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>processRawDataset</code> + gravar 3 JSONs (upload)</td>
+                  <td><span class="endpoint">POST /api/pipeline</span> (multipart <code>file</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>gerarDbLimpo()</code> — lê o dataset fixo em <code>src/db</code></td>
+                  <td><span class="endpoint">POST /api/pipeline/local</span></td>
+                </tr>
+                <tr>
+                  <td><code>npm run fixRamo</code> → <code>update_ramo_by_title.js</code></td>
+                  <td><span class="endpoint">POST /api/fix-ramo</span></td>
+                </tr>
+                <tr>
+                  <td><code>npm start</code> / <code>dryRun</code> / <code>reset</code></td>
+                  <td><span class="endpoint">POST /api/scrapper/start</span> (JSON <code>dryRun</code>, <code>reset</code>)</td>
+                </tr>
+                <tr>
+                  <td>Encerrar processo do scrapper</td>
+                  <td><span class="endpoint">POST /api/scrapper/stop</span></td>
+                </tr>
+                <tr>
+                  <td>Reset só do <code>progress.json</code></td>
+                  <td><span class="endpoint">POST /api/progress/reset</span></td>
+                </tr>
+                <tr>
+                  <td>Baixar JSONs gerados</td>
+                  <td><span class="endpoint">GET /api/db/…</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="dados">
+          <h2 class="panel-title">Dados — pipeline</h2>
+          <p class="panel-desc">
+            Gera ou atualiza os arquivos em <code>src/db</code> com a mesma lógica de <code>db-pipeline.js</code>.
+          </p>
+
+          <div class="two-col">
+            <div class="subcard">
+              <h3 class="subcard-title">Enviar JSON (arrastar)</h3>
+              <p class="hint">Chama <span class="endpoint">POST /api/pipeline</span> com o arquivo. Formato: array estilo crawler (Google Places).</p>
+              <div class="drop-area" id="dropArea" tabindex="0">
+                <input type="file" id="fileInput" accept=".json,application/json" hidden />
+                <p class="drop-title">Arraste o <code>.json</code> aqui ou clique</p>
+                <p class="drop-file mono" id="fileName"></p>
+              </div>
+              <button type="button" class="btn primary full" id="btnPipeline" disabled>Processar upload e gravar DBs</button>
+              <div class="alert error hidden" id="pipelineError"></div>
+              <pre class="code-out hidden" id="pipelineResult"></pre>
+            </div>
+
+            <div class="subcard">
+              <h3 class="subcard-title">Arquivo já em <code>src/db</code></h3>
+              <p class="hint">
+                Executa <code>gerarDbLimpo()</code> — lê
+                <span class="mono" id="localDatasetName">…</span>
+                (configurado em <code>db-pipeline.js</code>).
+              </p>
+              <button type="button" class="btn primary full" id="btnPipelineLocal">Rodar pipeline no arquivo local</button>
+              <div class="alert error hidden" id="pipelineLocalError"></div>
+              <pre class="code-out hidden" id="pipelineLocalResult"></pre>
+            </div>
+          </div>
+
+          <div class="downloads-bar">
+            <span class="downloads-label">Baixar do disco (GET /api/db/…):</span>
+            <a class="link-btn" href="/api/db/pessoas-DB.json" download>pessoas</a>
+            <a class="link-btn" href="/api/db/clinicas-DB.json" download>clínicas</a>
+            <a class="link-btn" href="/api/db/invalidos-DB.json" download>inválidos</a>
+            <a class="link-btn" href="/api/db/progress.json" download>progresso</a>
+          </div>
+        </section>
+
+        <section class="panel" id="ramo">
+          <h2 class="panel-title">Ramo — ajuste por gênero</h2>
+          <p class="panel-desc">
+            Dispara o mesmo script do <code>npm run fixRamo</code> sobre <code>pessoas-DB.json</code>.
+            <span class="endpoint">POST /api/fix-ramo</span>
+          </p>
+          <button type="button" class="btn" id="btnFixRamo">Executar correção de ramo</button>
+          <pre class="code-out hidden" id="fixRamoOut"></pre>
+        </section>
+
+        <section class="panel" id="whatsapp">
+          <h2 class="panel-title">WhatsApp — Puppeteer</h2>
+          <p class="panel-desc">
+            Inicia <code>launch-scrapper.js</code> no seu PC (navegador visível). Logs vêm de <span class="endpoint">GET /api/scrapper/logs</span>.
+          </p>
+          <div class="row options">
+            <label class="check"><input type="checkbox" id="chkDryRun" /> Dry run (não envia) — equivale a <code>--dryRun</code></label>
+            <label class="check"><input type="checkbox" id="chkResetProgress" /> Resetar progresso ao iniciar — <code>--reset</code></label>
+          </div>
+          <div class="row actions">
+            <button type="button" class="btn primary" id="btnStartScrapper">Iniciar scrapper</button>
+            <button type="button" class="btn danger" id="btnStopScrapper" disabled>Parar</button>
+            <button type="button" class="btn ghost" id="btnResetProgressOnly">Só zerar progress.json</button>
+          </div>
+          <div class="alert error hidden" id="scrapperError"></div>
+          <div class="log-wrap">
+            <div class="log-header">
+              <span>Logs do processo</span>
+              <button type="button" class="btn tiny ghost" id="btnRefreshLogs">Atualizar agora</button>
+            </div>
+            <pre class="log" id="logBox"></pre>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
